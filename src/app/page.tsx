@@ -1,64 +1,246 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useRef, useEffect, useCallback } from "react";
+import { optimize, type OptimizationResult } from "@/lib/optimizer";
+import type { HumanizerConfig } from "@/lib/humanizer/pipeline";
+import { saveEntry } from "@/lib/history";
+import { DEFAULT_INPUT } from "@/lib/defaults";
+import { SettingsPanel } from "@/components/settings-panel";
+import { HistoryPanel } from "@/components/history-panel";
+import type { HistoryEntry } from "@/lib/history";
+
+const SETTINGS_KEY = "wechat-engine-settings";
+
+function loadSettings(): HumanizerConfig {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveSettings(config: HumanizerConfig): void {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(config));
+}
 
 export default function Home() {
+  const [input, setInput] = useState(DEFAULT_INPUT);
+  const [result, setResult] = useState<OptimizationResult | null>(null);
+  const [isFirstOptimize, setIsFirstOptimize] = useState(true);
+  const [config, setConfig] = useState<HumanizerConfig>(loadSettings);
+  const previewRef = useRef<HTMLDivElement>(null);
+
+  const handleOptimize = useCallback(() => {
+    if (!input.trim()) return;
+    const res = optimize(input, config);
+    setResult(res);
+    setIsFirstOptimize(false);
+    saveEntry({
+      input: res.original,
+      output: res.optimized,
+      inputChars: res.originalChars,
+      outputChars: res.optimizedChars,
+    });
+  }, [input, config]);
+
+  const handleConfigChange = (newConfig: HumanizerConfig) => {
+    setConfig(newConfig);
+    saveSettings(newConfig);
+  };
+
+  const handleHistorySelect = (entry: HistoryEntry) => {
+    setInput(entry.input);
+    setResult({
+      original: entry.input,
+      optimized: entry.output,
+      originalChars: entry.inputChars,
+      optimizedChars: entry.outputChars,
+      blocks: [],
+    });
+    setIsFirstOptimize(false);
+  };
+
+  useEffect(() => {
+    if (result && previewRef.current) {
+      previewRef.current.scrollTo({
+        top: previewRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [result]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="bg-white border-b border-border">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-base font-semibold text-foreground tracking-tight">
+              AI 微信聊天体验引擎
+            </h1>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              AI Output Runtime · 让 AI 回复像真人聊天
+            </p>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <HistoryPanel onSelect={handleHistorySelect} />
+            <SettingsPanel config={config} onChange={handleConfigChange} />
+            <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded font-mono ml-1">
+              v0.2
+            </span>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      {/* Main */}
+      <main className="flex-1 max-w-6xl mx-auto w-full px-6 py-6">
+        <div className="grid grid-cols-2 gap-6">
+          {/* Left: Editor */}
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                原始 AI 输出
+              </h2>
+              <span className="text-[11px] text-muted-foreground tabular-nums">
+                {input.length} 字
+              </span>
+            </div>
+            <div className="bg-white rounded-xl border border-border shadow-sm">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="在此粘贴 AI 的原始输出..."
+                className="w-full h-[520px] p-5 text-sm text-foreground leading-relaxed resize-none focus:outline-none focus:ring-0 bg-transparent font-sans"
+              />
+            </div>
+          </section>
+
+          {/* Right: Preview */}
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                微信优化预览
+              </h2>
+              {result && (
+                <span className="text-[11px] text-[#07c160] font-medium tabular-nums">
+                  {result.optimizedChars} 字
+                  {result.originalChars > 0 && (
+                    <span className="ml-1 text-[10px] opacity-70">
+                      (-{Math.round((1 - result.optimizedChars / result.originalChars) * 100)}
+                      %)
+                    </span>
+                  )}
+                </span>
+              )}
+            </div>
+            <div
+              ref={previewRef}
+              className="bg-white rounded-xl border border-border shadow-sm h-[520px] overflow-y-auto"
+            >
+              {result ? (
+                <div className="p-6 min-h-full flex items-end">
+                  <div className="bg-[#95ec69] rounded-2xl rounded-bl-sm px-5 py-3.5 max-w-[85%] shadow-sm">
+                    <p className="text-sm text-[#1a1a1a] leading-relaxed whitespace-pre-wrap break-words">
+                      {result.optimized}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-6 h-full flex flex-col items-center justify-center text-center">
+                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                    <svg
+                      className="w-5 h-5 text-muted-foreground"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {isFirstOptimize
+                      ? "点击下方按钮，体验优化效果"
+                      : "请在左侧输入 AI 内容"}
+                  </p>
+                </div>
+              )}
+            </div>
+          </section>
         </div>
+
+        {/* Optimize Button */}
+        <div className="flex justify-center my-6">
+          <button
+            onClick={handleOptimize}
+            disabled={!input.trim()}
+            className="px-8 py-3 bg-[#07c160] text-white text-sm font-medium rounded-full hover:bg-[#06ad56] disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md active:scale-[0.98]"
+          >
+            优化微信体验
+          </button>
+        </div>
+
+        {/* Stats */}
+        {result && (
+          <div className="max-w-md mx-auto bg-white rounded-lg border border-border p-4">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-lg font-semibold text-foreground tabular-nums">
+                  {result.originalChars}
+                </div>
+                <div className="text-[11px] text-muted-foreground mt-0.5">
+                  原始字数
+                </div>
+              </div>
+              <div className="flex items-center justify-center">
+                <svg
+                  className="w-5 h-5 text-muted-foreground"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
+              </div>
+              <div>
+                <div className="text-lg font-semibold text-[#07c160] tabular-nums">
+                  {result.optimizedChars}
+                </div>
+                <div className="text-[11px] text-muted-foreground mt-0.5">
+                  优化后字数
+                </div>
+              </div>
+              <div className="col-span-3 pt-2 border-t border-border mt-2">
+                <div className="text-sm text-muted-foreground">
+                  共识别{" "}
+                  <span className="font-semibold text-foreground">
+                    {result.blocks.length}
+                  </span>{" "}
+                  个语义块 · 压缩比{" "}
+                  <span className="font-semibold text-[#07c160]">
+                    {result.originalChars > 0
+                      ? Math.round(
+                          (1 - result.optimizedChars / result.originalChars) * 100
+                        )
+                      : 0}
+                    %
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
