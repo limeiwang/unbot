@@ -11,7 +11,7 @@ function createTooltip() {
     document.body.removeChild(tooltip);
   }
 
-  tooltip = document.createElement("wechat-engine-root");
+  tooltip = document.createElement("unbot-root");
   tooltip.style.cssText = `
     all: initial;
     position: fixed;
@@ -28,24 +28,24 @@ function createTooltip() {
   `;
 
   tooltip.innerHTML = `
-    <div id="wechat-engine-header" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f0f0f0">
-      <span style="font-size:13px;font-weight:600;color:#07c160">AI 微信聊天体验引擎</span>
-      <button id="wechat-engine-close" style="all:initial;cursor:pointer;font-size:20px;line-height:1;color:#999;padding:2px 6px;border-radius:4px">&times;</button>
+    <div id="unbot-header" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f0f0f0">
+      <span style="font-size:13px;font-weight:600;color:#07c160">Unbot</span>
+      <button id="unbot-close" style="all:initial;cursor:pointer;font-size:20px;line-height:1;color:#999;padding:2px 6px;border-radius:4px">&times;</button>
     </div>
-    <div id="wechat-engine-body" style="padding:16px;max-height:360px;overflow-y:auto">
-      <div id="wechat-engine-loading" style="display:none;align-items:center;gap:10px;justify-content:center;padding:24px;color:#999;font-size:13px">
+    <div id="unbot-body" style="padding:16px;max-height:360px;overflow-y:auto">
+      <div id="unbot-loading" style="display:none;align-items:center;gap:10px;justify-content:center;padding:24px;color:#999;font-size:13px">
         <div style="width:18px;height:18px;border:2px solid #e5e7eb;border-top:2px solid #07c160;border-radius:50%"></div>
         <span>优化中...</span>
       </div>
-      <div id="wechat-engine-result" style="display:none">
-        <div id="wechat-engine-text" style="font-size:14px;line-height:1.7;color:#333;white-space:pre-wrap;word-break:break-word;background:#f8fff5;border-radius:8px;padding:12px;margin-bottom:12px;border-left:3px solid #07c160"></div>
-        <div id="wechat-engine-stats" style="font-size:11px;color:#999;margin-bottom:12px;font-family:monospace"></div>
-        <div id="wechat-engine-actions" style="display:flex;gap:8px">
-          <button id="wechat-engine-replace" class="wechat-engine-btn" style="all:initial;cursor:pointer;flex:1;text-align:center;padding:8px 0;border-radius:8px;font-size:13px;font-weight:500;background:#07c160;color:#fff">替换</button>
-          <button id="wechat-engine-copy" class="wechat-engine-btn" style="all:initial;cursor:pointer;flex:1;text-align:center;padding:8px 0;border-radius:8px;font-size:13px;font-weight:500;background:#f0f0f0;color:#333">复制</button>
+      <div id="unbot-result" style="display:none">
+        <div id="unbot-text" style="font-size:14px;line-height:1.7;color:#333;white-space:pre-wrap;word-break:break-word;background:#f8fff5;border-radius:8px;padding:12px;margin-bottom:12px;border-left:3px solid #07c160"></div>
+        <div id="unbot-stats" style="font-size:11px;color:#999;margin-bottom:12px;font-family:monospace"></div>
+        <div id="unbot-actions" style="display:flex;gap:8px">
+          <button id="unbot-replace" class="unbot-btn" style="all:initial;cursor:pointer;flex:1;text-align:center;padding:8px 0;border-radius:8px;font-size:13px;font-weight:500;background:#07c160;color:#fff">替换</button>
+          <button id="unbot-copy" class="unbot-btn" style="all:initial;cursor:pointer;flex:1;text-align:center;padding:8px 0;border-radius:8px;font-size:13px;font-weight:500;background:#f0f0f0;color:#333">复制</button>
         </div>
       </div>
-      <div id="wechat-engine-error" style="display:none;color:#e53e3e;font-size:13px;text-align:center;padding:16px"></div>
+      <div id="unbot-error" style="display:none;color:#e53e3e;font-size:13px;text-align:center;padding:16px"></div>
     </div>
   `;
 
@@ -60,9 +60,9 @@ function createTooltip() {
   }
 
   // Events
-  document.getElementById("wechat-engine-close").onclick = hideTooltip;
-  document.getElementById("wechat-engine-replace").onclick = () => replaceSelection();
-  document.getElementById("wechat-engine-copy").onclick = () => copyResult();
+  document.getElementById("unbot-close").onclick = hideTooltip;
+  document.getElementById("unbot-replace").onclick = () => replaceSelection();
+  document.getElementById("unbot-copy").onclick = () => copyResult();
 
   return tooltip;
 }
@@ -127,7 +127,7 @@ function hideTooltip() {
 }
 
 function replaceSelection() {
-  const optimized = document.getElementById("wechat-engine-text")?.textContent;
+  const optimized = document.getElementById("unbot-text")?.textContent;
   if (!optimized) return;
 
   const sel = window.getSelection();
@@ -141,11 +141,11 @@ function replaceSelection() {
 }
 
 function copyResult() {
-  const optimized = document.getElementById("wechat-engine-text")?.textContent;
+  const optimized = document.getElementById("unbot-text")?.textContent;
   if (!optimized) return;
 
   navigator.clipboard.writeText(optimized).then(() => {
-    const btn = document.getElementById("wechat-engine-copy");
+    const btn = document.getElementById("unbot-copy");
     if (btn) {
       const orig = btn.textContent;
       btn.textContent = "已复制!";
@@ -170,27 +170,27 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   switch (msg.action) {
     case "showLoading":
-      document.getElementById("wechat-engine-loading").style.display = "flex";
-      document.getElementById("wechat-engine-result").style.display = "none";
-      document.getElementById("wechat-engine-error").style.display = "none";
+      document.getElementById("unbot-loading").style.display = "flex";
+      document.getElementById("unbot-result").style.display = "none";
+      document.getElementById("unbot-error").style.display = "none";
       positionTooltip();
       break;
 
     case "showResult":
-      document.getElementById("wechat-engine-loading").style.display = "none";
-      document.getElementById("wechat-engine-error").style.display = "none";
-      document.getElementById("wechat-engine-text").textContent = msg.optimized;
-      document.getElementById("wechat-engine-stats").textContent =
+      document.getElementById("unbot-loading").style.display = "none";
+      document.getElementById("unbot-error").style.display = "none";
+      document.getElementById("unbot-text").textContent = msg.optimized;
+      document.getElementById("unbot-stats").textContent =
         `${msg.originalChars} 字 → ${msg.optimizedChars} 字 (${Math.round((1 - msg.optimizedChars / msg.originalChars) * 100)}%)`;
-      document.getElementById("wechat-engine-result").style.display = "block";
+      document.getElementById("unbot-result").style.display = "block";
       positionTooltip();
       break;
 
     case "showError":
-      document.getElementById("wechat-engine-loading").style.display = "none";
-      document.getElementById("wechat-engine-result").style.display = "none";
-      document.getElementById("wechat-engine-error").textContent = msg.error;
-      document.getElementById("wechat-engine-error").style.display = "block";
+      document.getElementById("unbot-loading").style.display = "none";
+      document.getElementById("unbot-result").style.display = "none";
+      document.getElementById("unbot-error").textContent = msg.error;
+      document.getElementById("unbot-error").style.display = "block";
       positionTooltip();
       break;
   }

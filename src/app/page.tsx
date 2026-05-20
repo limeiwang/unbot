@@ -9,7 +9,7 @@ import { SettingsPanel } from "@/components/settings-panel";
 import { HistoryPanel } from "@/components/history-panel";
 import type { HistoryEntry } from "@/lib/history";
 
-const SETTINGS_KEY = "wechat-engine-settings";
+const SETTINGS_KEY = "unbot-settings";
 
 function loadSettings(): HumanizerConfig {
   if (typeof window === "undefined") return {};
@@ -286,14 +286,13 @@ export default function Home() {
           </p>
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com/limeiwang/wechat-ai-engine"
+              href="https://github.com/limeiwang/unbot"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"
             >
               GitHub
             </a>
-            <span className="text-[10px] font-mono">v0.2</span>
           </div>
         </div>
       </footer>

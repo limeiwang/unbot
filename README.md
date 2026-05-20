@@ -1,8 +1,8 @@
-# WeChat AI Text Humanizer
+# Unbot — AI Text Humanizer
 
-> AI Output Runtime — 让 AI 文本更像真人聊天
+> 让 AI 文本更像真人聊天
 
-自动去除 AI 生成的「值得注意的是」、「综上所述」、「从技术角度来看」等套话，让文本在微信聊天场景中更自然。支持中英文。
+自动去除 AI 生成的「值得注意的是」、「综上所述」、「从技术角度来看」等套话，让文本更自然。支持中英文。
 
 **在线体验：[wechat.limw.top](https://wechat.limw.top)**
 
@@ -29,16 +29,20 @@ npm run dev
 ### CLI
 
 ```bash
-echo "值得注意的是，今日市场表现强劲。" | npx tsx cli/index.ts
+# 安装
+npm install -g @unbot/cli
+
+# 使用
+echo "值得注意的是，今日市场表现强劲。" | unbot
 
 # JSON 模式
-echo "It is worth noting that..." | npx tsx cli/index.ts --json
+echo "It is worth noting that..." | unbot --json
 
 # 文件输入
-npx tsx cli/index.ts -f input.txt -o output.txt
+unbot -f input.txt -o output.txt
 
 # 自定义配置
-npx tsx cli/index.ts -f input.txt -c config.json
+unbot -f input.txt -c config.json
 ```
 
 ### Chrome 扩展
@@ -51,7 +55,7 @@ npx tsx cli/index.ts -f input.txt -c config.json
 
 ```bash
 npm run build:cli
-# 输出 cli/dist/wechat-optimize.js (15KB, 零依赖)
+# 输出 cli/dist/unbot.js (15KB, 零依赖)
 ```
 
 ## 架构
@@ -69,6 +73,13 @@ Humanizer    — 10 类正则规则引擎，支持分类开关
   └── Shortener (断句 + 缩句 + 去重)
 Renderer     — 微信友好格式（段落间距、缩进、对齐）
 ```
+
+## npm Packages
+
+| Package | Description |
+|---------|-------------|
+| `@unbot/core` | AI 文本润色核心库 |
+| `@unbot/cli` | 命令行工具（命令: `unbot`） |
 
 ## Tech Stack
 

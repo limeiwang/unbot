@@ -1,12 +1,12 @@
 // Service Worker — handles context menu and API calls
 
-const API_URL = "https://wechat.limw.top/api/optimize";
+const API_URL = "https://unbot.limw.top/api/optimize";
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log("[bg] Extension installed, creating context menu");
   chrome.contextMenus.create({
-    id: "optimize-wechat",
-    title: "优化微信体验",
+    id: "optimize-unbot",
+    title: "优化文本体验",
     contexts: ["selection"],
   });
 });
@@ -33,7 +33,7 @@ async function ensureContentScript(tabId) {
 }
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (info.menuItemId !== "optimize-wechat" || !info.selectionText || !tab?.id) return;
+  if (info.menuItemId !== "optimize-unbot" || !info.selectionText || !tab?.id) return;
 
   console.log("[bg] Context menu clicked", {
     tabId: tab.id,

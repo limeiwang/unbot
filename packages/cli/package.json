@@ -1,0 +1,17 @@
+{
+  "name": "@unbot/cli",
+  "version": "0.1.2",
+  "description": "@unbot/core 的命令行工具 —— 去除文本中的 AI 填充词",
+  "type": "module",
+  "bin": {
+    "unbot": "./dist/cli.cjs"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "node scripts/build.cjs"
+  },
+  "dependencies": {
+    "@unbot/core": "^0.1.2"
+  },
+  "license": "MIT"
+}

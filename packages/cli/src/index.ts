@@ -1,21 +1,8 @@
-/**
- * unbot — CLI batch text optimizer
- *
- * Usage:
- *   echo "text" | npx tsx cli/index.ts
- *   npx tsx cli/index.ts -f input.txt
- *   npx tsx cli/index.ts -t "direct text"
- *   npx tsx cli/index.ts -f input.txt --json
- *   npx tsx cli/index.ts -f input.txt -c config.json
- */
+#!/usr/bin/env node
 
 import { readFileSync } from 'fs';
-import { optimize, type OptimizationResult } from '../src/lib/optimizer';
-import type { HumanizerConfig } from '../src/lib/humanizer/pipeline';
-
-declare var __VERSION__: string | undefined;
-
-// --- Helpers ---
+import { optimize } from '@unbot/core';
+import type { HumanizerConfig } from '@unbot/core';
 
 function bold(s: string) { return `\x1b[1m${s}\x1b[22m`; }
 function green(s: string) { return `\x1b[32m${s}\x1b[39m`; }
@@ -27,17 +14,17 @@ function printUsage() {
 ${bold('unbot')} — ${dim('让 AI 文本更像真人聊天')}
 
 ${bold('Usage:')}
-  ${dim('# Pipe from another command (e.g. stock-monitor)')}
-  echo "text" | npx tsx cli/index.ts
+  ${dim('# Pipe from another command')}
+  echo "text" | unbot
 
   ${dim('# Read from file')}
-  npx tsx cli/index.ts -f input.txt
+  unbot -f input.txt
 
   ${dim('# Direct text argument')}
-  npx tsx cli/index.ts -t "First of all, hello world."
+  unbot -t "First of all, hello world."
 
   ${dim('# Custom configuration')}
-  npx tsx cli/index.ts -f input.txt -c config.json
+  unbot -f input.txt -c config.json
 
 ${bold('Options:')}
   -f, --file <path>      Read input from file
@@ -51,17 +38,11 @@ ${bold('Options:')}
 `);
 }
 
-function printVersion() {
-  const version = typeof __VERSION__ !== 'undefined' ? __VERSION__ : '0.0.0-dev';
-  console.log(`unbot v${version}`);
-}
-
-function formatResult(r: OptimizationResult, pretty: boolean): string {
+function formatResult(r: ReturnType<typeof optimize>, pretty: boolean): string {
   if (!pretty) {
     return `---\n${r.optimized}\n---\n📊 ${r.originalChars} chars → ${r.optimizedChars} chars (${Math.round((1 - r.optimizedChars / r.originalChars) * 100)}% reduction) · ${r.blocks.length} blocks\n`;
   }
 
-  // Terminal: colorized summary
   const lines = [
     '',
     green('✓ Optimized:'),
@@ -82,14 +63,12 @@ function readFromStdin(): Promise<string> {
   });
 }
 
-function parseArgs(): {
-  help: boolean; version: boolean; file?: string; text?: string;
-  config?: string; output?: string; json: boolean; pretty: boolean;
-} {
+function parseArgs() {
   const args = process.argv.slice(2);
-  const opts: ReturnType<typeof parseArgs> = {
-    help: false, version: false, json: false, pretty: !process.stdout.isTTY,
-  };
+  const opts: {
+    help: boolean; version: boolean; file?: string; text?: string;
+    config?: string; output?: string; json: boolean; pretty: boolean;
+  } = { help: false, version: false, json: false, pretty: process.stdout.isTTY };
 
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
@@ -108,60 +87,30 @@ function parseArgs(): {
 
 function loadConfig(path?: string): HumanizerConfig {
   if (!path) return {};
-  try {
-    const raw = readFileSync(path, 'utf-8');
-    return JSON.parse(raw) as HumanizerConfig;
-  } catch (e) {
-    console.error(red(`Error: cannot read config file "${path}" — ${(e as Error).message}`));
-    process.exit(1);
-  }
+  return JSON.parse(readFileSync(path, 'utf-8')) as HumanizerConfig;
 }
-
-// --- Main ---
 
 async function main() {
   const opts = parseArgs();
 
   if (opts.help) { printUsage(); return; }
-  if (opts.version) { printVersion(); return; }
+  if (opts.version) { console.log('unbot v0.1.1'); return; }
 
-  // Read input
   let input: string;
   if (opts.text) {
     input = opts.text;
   } else if (opts.file) {
-    try {
-      input = readFileSync(opts.file, 'utf-8').trim();
-    } catch (e) {
-      console.error(red(`Error: cannot read file "${opts.file}" — ${(e as Error).message}`));
-      process.exit(1);
-    }
+    input = readFileSync(opts.file, 'utf-8').trim();
   } else {
-    if (process.stdin.isTTY) {
-      printUsage();
-      process.exit(0);
-    }
+    if (process.stdin.isTTY) { printUsage(); process.exit(0); }
     input = await readFromStdin();
   }
 
-  if (!input) {
-    console.error(red('Error: empty input'));
-    process.exit(1);
-  }
+  if (!input) { console.error(red('Error: empty input')); process.exit(1); }
 
-  // Load config
   const config = loadConfig(opts.config);
+  const result = optimize(input, config);
 
-  // Optimize
-  let result: OptimizationResult;
-  try {
-    result = optimize(input, config);
-  } catch (e) {
-    console.error(red(`Error: optimization failed — ${(e as Error).message}`));
-    process.exit(1);
-  }
-
-  // Output
   if (opts.json) {
     const output = JSON.stringify({
       original: result.original,
@@ -174,7 +123,6 @@ async function main() {
         ? Math.round((1 - result.optimizedChars / result.originalChars) * 100)
         : 0,
     }, null, 2);
-
     if (opts.output) {
       writeFileSync(opts.output, output + '\n');
     } else {
@@ -190,10 +138,5 @@ async function main() {
   }
 }
 
-// Dynamic import for writeFileSync in output mode
 import { writeFileSync } from 'fs';
-
-main().catch((e) => {
-  console.error(red(`Unexpected error: ${e.message}`));
-  process.exit(1);
-});
+main().catch((e) => { console.error(red(`Error: ${e.message}`)); process.exit(1); });

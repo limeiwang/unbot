@@ -7,7 +7,7 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const TITLE = "WeChat AI Text Humanizer — AI 微信聊天体验引擎";
+const TITLE = "Unbot — AI 文本润色工具";
 const DESCRIPTION =
   "AI 文本人性化优化工具。自动去除「值得注意的是」、「综上所述」等 AI 套话，中英文都支持。在线预览、Chrome 扩展划词即用、CLI 批量处理。";
 
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: "website",
     locale: "zh_CN",
-    siteName: "WeChat AI Text Humanizer",
+    siteName: "Unbot",
   },
 };
 

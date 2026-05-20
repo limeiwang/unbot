@@ -4,7 +4,7 @@ import { removeAIPhrases, AI_PHRASE_CATEGORIES } from '@/lib/humanizer/categorie
 import { shortenContent } from '@/lib/humanizer/shortener';
 import { HumanizerPipeline } from '@/lib/humanizer/pipeline';
 import { optimize } from '@/lib/optimizer';
-import { WeChatRenderer } from '@/lib/renderers/wechat';
+import { ChatRenderer } from '@/lib/renderers/chat';
 import { loadHistory, saveEntry, clearHistory } from '@/lib/history';
 import type { MessageDocument } from '@/lib/types/dsl';
 import type { HumanizerConfig } from '@/lib/humanizer/pipeline';
@@ -413,10 +413,10 @@ describe('Humanizer Pipeline', () => {
 });
 
 // ============================================================
-// 5. Renderer — WeChat output format
+// 5. Renderer — Chat output format
 // ============================================================
-describe('WeChat Renderer', () => {
-  const renderer = new WeChatRenderer();
+describe('Chat Renderer', () => {
+  const renderer = new ChatRenderer();
 
   it('should render headings with 【】', () => {
     const doc: MessageDocument = {

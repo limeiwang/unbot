@@ -1,5 +1,5 @@
 import type { MessageRenderer } from './interface';
-import type { MessageDocument, SemanticBlock } from '@/lib/types/dsl';
+import type { MessageDocument, SemanticBlock } from '../types/dsl';
 
 function cleanMarkdown(text: string): string {
   return text
@@ -36,7 +36,7 @@ function renderBlock(block: SemanticBlock): string {
   }
 }
 
-export class WeChatRenderer implements MessageRenderer {
+export class ChatRenderer implements MessageRenderer {
   render(doc: MessageDocument): string {
     return doc.blocks
       .map((block) => renderBlock(block))

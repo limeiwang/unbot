@@ -1,7 +1,7 @@
-import type { SemanticBlock } from '@/lib/types/dsl';
-import { parseSemantic } from '@/lib/parser/semantic-parser';
-import { HumanizerPipeline, type HumanizerConfig } from '@/lib/humanizer/pipeline';
-import { ChatRenderer } from '@/lib/renderers/chat';
+import type { SemanticBlock } from './types/dsl';
+import { parseSemantic } from './parser/semantic-parser';
+import { HumanizerPipeline, type HumanizerConfig } from './humanizer/pipeline';
+import { ChatRenderer } from './renderers/chat';
 
 export interface OptimizationResult {
   original: string;

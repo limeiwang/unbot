@@ -4,7 +4,7 @@
   const text = document.getElementById("status-text");
 
   try {
-    const res = await fetch("https://wechat.limw.top/api/optimize", {
+    const res = await fetch("https://unbot.limw.top/api/optimize", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: "ping" }),

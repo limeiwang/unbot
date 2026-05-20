@@ -7,7 +7,7 @@ export interface HistoryEntry {
   outputChars: number;
 }
 
-const STORAGE_KEY = 'wechat-engine-history';
+const STORAGE_KEY = 'unbot-history';
 const MAX_ENTRIES = 50;
 
 export function loadHistory(): HistoryEntry[] {

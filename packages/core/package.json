@@ -1,0 +1,23 @@
+{
+  "name": "@unbot/core",
+  "version": "0.1.2",
+  "description": "AI 文本润色工具 —— 去除中英文文本中的 AI 填充词和套话",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+  },
+  "keywords": ["ai", "text", "humanizer", "chinese", "nlp", "unbot"],
+  "license": "MIT"
+}

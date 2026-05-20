@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "AI 微信聊天体验引擎",
+  "name": "Unbot",
   "version": "1.0.0",
   "description": "右键优化 AI 文本，让回复更像真人聊天",
   "permissions": ["contextMenus", "activeTab", "clipboardWrite", "storage", "scripting"],
-  "host_permissions": ["https://wechat.limw.top/*"],
+  "host_permissions": ["https://unbot.limw.top/*"],
   "background": {
     "service_worker": "background.js"
   },
@@ -17,7 +17,7 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "AI 微信聊天体验引擎"
+    "default_title": "Unbot"
   },
   "icons": {
     "16": "icons/icon16.png",

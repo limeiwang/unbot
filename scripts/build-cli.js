@@ -1,6 +1,6 @@
 /**
  * Build standalone CLI bundle via esbuild.
- * Output: cli/dist/wechat-optimize.js — single file, zero deps.
+ * Output: cli/dist/unbot.js — single file, zero deps.
  */
 const esbuild = require('esbuild');
 const { readFileSync, writeFileSync } = require('fs');
@@ -11,7 +11,7 @@ const VERSION = pkg.version;
 
 esbuild.build({
   entryPoints: [path.join(__dirname, '..', 'cli/index.ts')],
-  outfile: path.join(__dirname, '..', 'cli/dist/wechat-optimize.js'),
+  outfile: path.join(__dirname, '..', 'cli/dist/unbot.js'),
   bundle: true,
   platform: 'node',
   target: 'node18',
@@ -28,9 +28,9 @@ esbuild.build({
   minifyWhitespace: true,
   minifyIdentifiers: false,
 }).then(() => {
-  const outPath = path.join(__dirname, '..', 'cli/dist/wechat-optimize.js');
+  const outPath = path.join(__dirname, '..', 'cli/dist/unbot.js');
   const stats = readFileSync(outPath, 'utf-8');
-  console.log(`✅ Built cli/dist/wechat-optimize.js (${(stats.length / 1024).toFixed(0)} KB)`);
+  console.log(`✅ Built cli/dist/unbot.js (${(stats.length / 1024).toFixed(0)} KB)`);
 }).catch((err) => {
   console.error('❌ Build failed:', err.message);
   process.exit(1);
