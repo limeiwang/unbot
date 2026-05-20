@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 320px;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+      padding: 20px;
+      color: #1a1a1a;
+    }
+    h1 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #07c160;
+      margin-bottom: 4px;
+    }
+    p {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+    .section { margin-bottom: 14px; }
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .usage-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: #f9fafb;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+    .step-num {
+      width: 20px;
+      height: 20px;
+      background: #07c160;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .api-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #666;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d1d5db;
+    }
+    .status-dot.online { background: #07c160; }
+    .status-dot.offline { background: #e53e3e; }
+    hr {
+      border: none;
+      border-top: 1px solid #f0f0f0;
+      margin: 14px 0;
+    }
+    .footer {
+      font-size: 11px;
+      color: #bbb;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>AI 微信聊天体验引擎</h1>
+  <p>v1.0.0 · 让 AI 回复像真人聊天</p>
+
+  <div class="section">
+    <div class="section-title">使用方式</div>
+    <div class="usage-step">
+      <span class="step-num">1</span>
+      <span>选中任意 AI 文本</span>
+    </div>
+    <div class="usage-step">
+      <span class="step-num">2</span>
+      <span>右键 → "优化微信体验"</span>
+    </div>
+    <div class="usage-step">
+      <span class="step-num">3</span>
+      <span>点击"替换"或"复制"</span>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="section">
+    <div class="api-status">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-text">检查服务器状态...</span>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="footer">
+    数据通过 wechat.limw.top 处理
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

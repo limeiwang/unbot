@@ -6,7 +6,7 @@ export interface ShortenerConfig {
 function splitLongString(text: string, maxChars: number): string[] {
   const segments: string[] = [];
 
-  const sentences = text.split(/(?<=[。！？!?])/).filter(Boolean);
+  const sentences = text.split(/(?<=[。！？！?!?.])/).filter(Boolean);
 
   for (const sentence of sentences) {
     if (sentence.length <= maxChars) {

@@ -13,6 +13,8 @@ function cleanMarkdown(text: string): string {
 
 function renderBlock(block: SemanticBlock): string {
   const content = cleanMarkdown(block.content);
+
+  if (block.type === 'divider') return '· · ·';
   if (!content) return '';
 
   switch (block.type) {
@@ -27,9 +29,6 @@ function renderBlock(block: SemanticBlock): string {
 
     case 'list-item':
       return `→ ${content}`;
-
-    case 'divider':
-      return '· · ·';
 
     case 'paragraph':
     default:
