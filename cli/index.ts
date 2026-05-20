@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * wechat-optimize — CLI batch text optimizer
  *
@@ -13,6 +12,8 @@
 import { readFileSync } from 'fs';
 import { optimize, type OptimizationResult } from '../src/lib/optimizer';
 import type { HumanizerConfig } from '../src/lib/humanizer/pipeline';
+
+declare var __VERSION__: string | undefined;
 
 // --- Helpers ---
 
@@ -51,8 +52,8 @@ ${bold('Options:')}
 }
 
 function printVersion() {
-  const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));
-  console.log(`wechat-optimize v${pkg.version}`);
+  const version = typeof __VERSION__ !== 'undefined' ? __VERSION__ : '0.0.0-dev';
+  console.log(`wechat-optimize v${version}`);
 }
 
 function formatResult(r: OptimizationResult, pretty: boolean): string {
