@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WeChat AI Text Humanizer
 
-## Getting Started
+> AI Output Runtime — 让 AI 文本更像真人聊天
 
-First, run the development server:
+自动去除 AI 生成的「值得注意的是」、「综上所述」、「从技术角度来看」等套话，让文本在微信聊天场景中更自然。支持中英文。
+
+**在线体验：[wechat.limw.top](https://wechat.limw.top)**
+
+## 功能
+
+- **Web 编辑器** — 粘贴文本，实时预览 Before/After
+- **Chrome 扩展** — 选中网页文本 → 右键 → 一键优化
+- **CLI 工具** — 15KB 单文件，可嵌入其他项目
+- **10 类规则引擎** — 中文 6 类 + 英文 5 类，支持单独开关
+- **短句重排** — 控制每段字数和行数
+- **纯浏览器端处理** — 文本不上传服务器
+
+## 快速开始
+
+### Web
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+打开 [http://localhost:3000](http://localhost:3000)。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### CLI
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+echo "值得注意的是，今日市场表现强劲。" | npx tsx cli/index.ts
 
-## Learn More
+# JSON 模式
+echo "It is worth noting that..." | npx tsx cli/index.ts --json
 
-To learn more about Next.js, take a look at the following resources:
+# 文件输入
+npx tsx cli/index.ts -f input.txt -o output.txt
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# 自定义配置
+npx tsx cli/index.ts -f input.txt -c config.json
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Chrome 扩展
 
-## Deploy on Vercel
+1. 打开 `chrome://extensions/`
+2. 开启"开发者模式"
+3. 加载已解压的扩展 → 选择 `chrome-extension/` 目录
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 构建独立 CLI
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build:cli
+# 输出 cli/dist/wechat-optimize.js (15KB, 零依赖)
+```
+
+## 架构
+
+```
+输入文本 → Parser → Humanizer Pipeline → Renderer → 输出
+
+Parser       — 按空行分割段落区块
+Humanizer    — 10 类正则规则引擎，支持分类开关
+  ├── 免责套话 (值得注意的是, It is worth noting that)
+  ├── 冗余总结 (基于以上分析, In conclusion)
+  ├── 过渡套话 (首先, First of all)
+  ├── 视角套话 (从技术角度来看, From a perspective)
+  ├── 填充套话 (在一定程度上, Generally speaking)
+  └── Shortener (断句 + 缩句 + 去重)
+Renderer     — 微信友好格式（段落间距、缩进、对齐）
+```
+
+## Tech Stack
+
+- **框架**: Next.js 15 / React 19 / TypeScript
+- **样式**: TailwindCSS 4 / shadcn/ui
+- **扩展**: Chrome Extension MV3
+- **CLI**: esbuild (15KB standalone CJS)
+- **测试**: Vitest (70+ E2E tests)
+
+## License
+
+MIT

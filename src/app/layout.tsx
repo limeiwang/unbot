@@ -7,9 +7,20 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+const TITLE = "WeChat AI Text Humanizer — AI 微信聊天体验引擎";
+const DESCRIPTION =
+  "AI 文本人性化优化工具。自动去除「值得注意的是」、「综上所述」等 AI 套话，中英文都支持。在线预览、Chrome 扩展划词即用、CLI 批量处理。";
+
 export const metadata: Metadata = {
-  title: "AI 微信聊天体验引擎",
-  description: "AI Output Runtime — 优化 AI 内容在微信聊天场景中的阅读体验",
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    type: "website",
+    locale: "zh_CN",
+    siteName: "WeChat AI Text Humanizer",
+  },
 };
 
 export default function RootLayout({
@@ -20,6 +31,11 @@ export default function RootLayout({
       lang="zh-CN"
       className={`${geistSans.variable} h-full antialiased`}
     >
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      </head>
       <body className="min-h-full font-sans">{children}</body>
     </html>
   );

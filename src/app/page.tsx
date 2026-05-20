@@ -30,6 +30,7 @@ export default function Home() {
   const [result, setResult] = useState<OptimizationResult | null>(null);
   const [isFirstOptimize, setIsFirstOptimize] = useState(true);
   const [config, setConfig] = useState<HumanizerConfig>(loadSettings);
+  const [copied, setCopied] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
   const handleOptimize = useCallback(() => {
@@ -44,6 +45,32 @@ export default function Home() {
       outputChars: res.optimizedChars,
     });
   }, [input, config]);
+
+  const handleCopy = useCallback(async () => {
+    if (!result?.optimized) return;
+    try {
+      await navigator.clipboard.writeText(result.optimized);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // 回退：select 方式
+      const textarea = document.createElement("textarea");
+      textarea.value = result.optimized;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+  }, [result]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      handleOptimize();
+    }
+  };
 
   const handleConfigChange = (newConfig: HumanizerConfig) => {
     setConfig(newConfig);
@@ -75,7 +102,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="bg-white border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-base font-semibold text-foreground tracking-tight">
               AI 微信聊天体验引擎
@@ -95,15 +122,16 @@ export default function Home() {
       </header>
 
       {/* Main */}
-      <main className="flex-1 max-w-6xl mx-auto w-full px-6 py-6">
-        <div className="grid grid-cols-2 gap-6">
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Editor */}
           <section className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 原始 AI 输出
               </h2>
-              <span className="text-[11px] text-muted-foreground tabular-nums">
+              <span className="text-[11px] text-muted-foreground tabular-nums flex items-center gap-3">
+                <span className="text-[10px] opacity-60 hidden sm:inline">Ctrl+Enter</span>
                 {input.length} 字
               </span>
             </div>
@@ -111,8 +139,9 @@ export default function Home() {
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="在此粘贴 AI 的原始输出..."
-                className="w-full h-[520px] p-5 text-sm text-foreground leading-relaxed resize-none focus:outline-none focus:ring-0 bg-transparent font-sans"
+                onKeyDown={handleKeyDown}
+                placeholder="在此粘贴 AI 的原始输出...（Ctrl+Enter 快速优化）"
+                className="w-full h-[320px] lg:h-[520px] p-5 text-sm text-foreground leading-relaxed resize-none focus:outline-none focus:ring-0 bg-transparent font-sans"
               />
             </div>
           </section>
@@ -137,10 +166,16 @@ export default function Home() {
             </div>
             <div
               ref={previewRef}
-              className="bg-white rounded-xl border border-border shadow-sm h-[520px] overflow-y-auto"
+              className="bg-white rounded-xl border border-border shadow-sm h-[320px] lg:h-[520px] overflow-y-auto"
             >
               {result ? (
-                <div className="p-6 min-h-full flex items-end">
+                <div className="p-6 min-h-full relative flex items-end">
+                  <button
+                    onClick={handleCopy}
+                    className="absolute top-3 right-3 z-10 px-3 py-1.5 text-xs font-medium rounded-full border border-border bg-white/80 backdrop-blur-sm hover:bg-white transition-all shadow-sm"
+                  >
+                    {copied ? "✓ 已复制" : "复制"}
+                  </button>
                   <div className="bg-[#95ec69] rounded-2xl rounded-bl-sm px-5 py-3.5 max-w-[85%] shadow-sm">
                     <p className="text-sm text-[#1a1a1a] leading-relaxed whitespace-pre-wrap break-words">
                       {result.optimized}
@@ -242,6 +277,26 @@ export default function Home() {
           </div>
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-border bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
+          <p>
+            所有处理在浏览器本地完成，文本不会上传到服务器
+          </p>
+          <div className="flex items-center gap-4">
+            <a
+              href="https://github.com/limeiwang/wechat-ai-engine"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              GitHub
+            </a>
+            <span className="text-[10px] font-mono">v0.2</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
