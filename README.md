@@ -4,7 +4,7 @@
 
 自动去除 AI 生成的「值得注意的是」、「综上所述」、「从技术角度来看」等套话，让文本更自然。支持中英文。
 
-**在线体验：[wechat.limw.top](https://wechat.limw.top)**
+**在线体验：[unbot.limw.top](https://unbot.limw.top)**
 
 ## 功能
 
