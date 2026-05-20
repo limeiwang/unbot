@@ -12,7 +12,34 @@ export interface PhraseCategory {
 }
 
 export const AI_PHRASE_CATEGORIES: PhraseCategory[] = [
-  // ===== Chinese Categories =====
+  // ===== Chinese Categories (order: anywhere → sentence-start removable → transitions → perspective) =====
+  {
+    id: 'cn-hedging',
+    name: '免责套话',
+    nameEn: 'Hedging',
+    description: '值得注意的是、不可否认等防御性表达',
+    rules: [
+      { pattern: /值得注意的是[，,。]?\s*/g, replacement: '' },
+      { pattern: /需要指出的是[，,。]?\s*/g, replacement: '' },
+      { pattern: /不可否认的是[，,。]?\s*/g, replacement: '' },
+      { pattern: /众所周知[，,。]?\s*/g, replacement: '' },
+      { pattern: /毋庸置疑[，,。]?\s*/g, replacement: '' },
+      { pattern: /毫无疑问[，,。]?\s*/g, replacement: '' },
+      { pattern: /需要强调的是[，,。]?\s*/g, replacement: '' },
+      { pattern: /值得一提的是[，,。]?\s*/g, replacement: '' },
+    ],
+  },
+  {
+    id: 'cn-redundant',
+    name: '冗余总结',
+    nameEn: 'Redundant Summary',
+    description: '基于以上分析、综上所述等不必要的总结引导',
+    rules: [
+      { pattern: /基于以上分析[，,。]?\s*/g, replacement: '' },
+      { pattern: /根据当前(?:情况|形势|市场|数据)[，,。，]?\s*/g, replacement: '' },
+      { pattern: /结合(?:上述|以上)分析[，,。]?\s*/g, replacement: '' },
+    ],
+  },
   {
     id: 'cn-transitions',
     name: '过渡套话',
@@ -31,22 +58,6 @@ export const AI_PHRASE_CATEGORIES: PhraseCategory[] = [
       { pattern: /(^|[。！？\n])再次[，,]?\s*/g, replacement: '$1' },
       { pattern: /(^|[。！？\n])最后[，,]?\s*/g, replacement: '$1' },
       { pattern: /(^|[。！？\n])[第其][一二三][，,、]\s*/g, replacement: '$1' },
-    ],
-  },
-  {
-    id: 'cn-hedging',
-    name: '免责套话',
-    nameEn: 'Hedging',
-    description: '值得注意的是、不可否认等防御性表达',
-    rules: [
-      { pattern: /值得注意的是[，,。]?\s*/g, replacement: '' },
-      { pattern: /需要指出的是[，,。]?\s*/g, replacement: '' },
-      { pattern: /不可否认的是[，,。]?\s*/g, replacement: '' },
-      { pattern: /众所周知[，,。]?\s*/g, replacement: '' },
-      { pattern: /毋庸置疑[，,。]?\s*/g, replacement: '' },
-      { pattern: /毫无疑问[，,。]?\s*/g, replacement: '' },
-      { pattern: /需要强调的是[，,。]?\s*/g, replacement: '' },
-      { pattern: /值得一提的是[，,。]?\s*/g, replacement: '' },
     ],
   },
   {
@@ -94,34 +105,8 @@ export const AI_PHRASE_CATEGORIES: PhraseCategory[] = [
       { pattern: /投资者可[以]?(?:关注|注意|参考)[，,]?\s*/g, replacement: '' },
     ],
   },
-  {
-    id: 'cn-redundant',
-    name: '冗余总结',
-    nameEn: 'Redundant Summary',
-    description: '基于以上分析、综上所述等不必要的总结引导',
-    rules: [
-      { pattern: /基于以上分析[，,。]?\s*/g, replacement: '' },
-      { pattern: /根据当前(?:情况|形势|市场|数据)[，,。，]?\s*/g, replacement: '' },
-      { pattern: /结合(?:上述|以上)分析[，,。]?\s*/g, replacement: '' },
-    ],
-  },
 
-  // ===== English Categories =====
-  {
-    id: 'en-transitions',
-    name: 'English Transitions',
-    nameEn: 'Transitions',
-    description: '"First of all", "Secondly", "Last but not least" etc.',
-    rules: [
-      // Must come before generic "First" — more specific first
-      { pattern: /(^|[。！？.!?]\s*)First\s+and\s+foremost[,\s]+/gi, replacement: '$1' },
-      { pattern: /(^|[。！？.!?]\s*)First\s+of\s+all[,\s]+/gi, replacement: '$1' },
-      { pattern: /(^|[。！？.!?]\s*)First(?:ly)?[,\s]+/gi, replacement: '$1' },
-      { pattern: /(^|[。！？.!?]\s*)Second(?:ly)?[,\s]+/gi, replacement: '$1' },
-      { pattern: /(^|[。！？.!?]\s*)Third(?:ly)?[,\s]+/gi, replacement: '$1' },
-      { pattern: /(^|[。！？.!?]\s*)Last\s+but\s+not\s+least[,\s]+/gi, replacement: '$1' },
-    ],
-  },
+  // ===== English Categories (order: anywhere → conclusion → transitions → perspective → filler) =====
   {
     id: 'en-hedging',
     name: 'English Hedging',
@@ -141,19 +126,6 @@ export const AI_PHRASE_CATEGORIES: PhraseCategory[] = [
     ],
   },
   {
-    id: 'en-perspective',
-    name: 'English Perspective',
-    nameEn: 'Perspective',
-    description: '"From a technical perspective", "In my opinion" etc.',
-    rules: [
-      { pattern: /(^|[。！？.!?]\s*)From\s+a\s+(?:technical|market|practical|professional)\s+(?:perspective|standpoint|point\s+of\s+view)[,\s]+/gi, replacement: '$1' },
-      { pattern: /(^|[。！？.!?]\s*)In\s+my\s+opinion[,\s]+/gi, replacement: '$1' },
-      { pattern: /(^|[。！？.!?]\s*)From\s+my\s+(?:perspective|point\s+of\s+view)[,\s]+/gi, replacement: '$1' },
-      { pattern: /(^|[。！？.!?]\s*)When\s+it\s+comes\s+to\s+/gi, replacement: '$1' },
-      { pattern: /(^|[。！？.!?]\s*)In\s+terms\s+of\s+/gi, replacement: '$1' },
-    ],
-  },
-  {
     id: 'en-conclusion',
     name: 'English Conclusion',
     nameEn: 'Conclusion',
@@ -166,6 +138,34 @@ export const AI_PHRASE_CATEGORIES: PhraseCategory[] = [
       { pattern: /(^|[。！？.!?]\s*)In\s+summary[,\s]+/gi, replacement: '$1' },
       { pattern: /(^|[。！？.!?]\s*)Based\s+on\s+(?:the\s+)?above\s+analysis[,\s]+/gi, replacement: '$1' },
       { pattern: /(^|[。！？.!?]\s*)As\s+mentioned\s+above[,\s]+/gi, replacement: '$1' },
+    ],
+  },
+  {
+    id: 'en-transitions',
+    name: 'English Transitions',
+    nameEn: 'Transitions',
+    description: '"First of all", "Secondly", "Last but not least" etc.',
+    rules: [
+      // Must come before generic "First" — more specific first
+      { pattern: /(^|[。！？.!?]\s*)First\s+and\s+foremost[,\s]+/gi, replacement: '$1' },
+      { pattern: /(^|[。！？.!?]\s*)First\s+of\s+all[,\s]+/gi, replacement: '$1' },
+      { pattern: /(^|[。！？.!?]\s*)First(?:ly)?[,\s]+/gi, replacement: '$1' },
+      { pattern: /(^|[。！？.!?]\s*)Second(?:ly)?[,\s]+/gi, replacement: '$1' },
+      { pattern: /(^|[。！？.!?]\s*)Third(?:ly)?[,\s]+/gi, replacement: '$1' },
+      { pattern: /(^|[。！？.!?]\s*)Last\s+but\s+not\s+least[,\s]+/gi, replacement: '$1' },
+    ],
+  },
+  {
+    id: 'en-perspective',
+    name: 'English Perspective',
+    nameEn: 'Perspective',
+    description: '"From a technical perspective", "In my opinion" etc.',
+    rules: [
+      { pattern: /(^|[。！？.!?]\s*)From\s+a\s+(?:technical|market|practical|professional)\s+(?:perspective|standpoint|point\s+of\s+view)[,\s]+/gi, replacement: '$1' },
+      { pattern: /(^|[。！？.!?]\s*)In\s+my\s+opinion[,\s]+/gi, replacement: '$1' },
+      { pattern: /(^|[。！？.!?]\s*)From\s+my\s+(?:perspective|point\s+of\s+view)[,\s]+/gi, replacement: '$1' },
+      { pattern: /(^|[。！？.!?]\s*)When\s+it\s+comes\s+to\s+/gi, replacement: '$1' },
+      { pattern: /(^|[。！？.!?]\s*)In\s+terms\s+of\s+/gi, replacement: '$1' },
     ],
   },
   {
