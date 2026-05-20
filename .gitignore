@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# deploy config
+deploy.sh
+
 # cli build output
 /cli/dist/
 
